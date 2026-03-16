@@ -41,3 +41,42 @@ saveBtn.addEventListener("click", () => {
     },
   );
 });
+
+const domainListContainer = document.getElementById("domainList"); // HTML에 추가 필요
+
+// 제외된 도메인 리스트 렌더링
+const renderDomainList = () => {
+  chrome.storage.sync.get({ disabledDomains: [] }, (items) => {
+    domainListContainer.innerHTML = ""; // 기존 리스트 초기화
+
+    if (items.disabledDomains.length === 0) {
+      domainListContainer.innerHTML = "<li>제외된 사이트가 없습니다.</li>";
+      return;
+    }
+
+    items.disabledDomains.forEach((domain) => {
+      const li = document.createElement("li");
+      li.textContent = domain;
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "삭제";
+      delBtn.style.marginLeft = "10px";
+
+      delBtn.onclick = () => {
+        const updatedDomains = items.disabledDomains.filter(
+          (d) => d !== domain,
+        );
+        chrome.storage.sync.set(
+          { disabledDomains: updatedDomains },
+          renderDomainList,
+        );
+      };
+
+      li.appendChild(delBtn);
+      domainListContainer.appendChild(li);
+    });
+  });
+};
+
+// 페이지 로드 시 리스트 출력
+document.addEventListener("DOMContentLoaded", renderDomainList);

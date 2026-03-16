@@ -69,3 +69,9 @@ npm run build
 ## 📄 License
 
 이 프로젝트는 [MIT License](https://opensource.org/licenses/MIT)를 따릅니다.
+
+## 🚀 Roadmap
+
+- [ ] **Usage Tracker:** 로컬 스토리지 기반의 실시간 API 사용량(Character Count) 통계 UI
+- [ ] **Domain Control:** 특정 도메인 화이트리스트/블랙리스트 관리 기능
+- [ ] **Global Toggle:** 툴바 팝업을 통한 전체 기능 On/Off 스위치

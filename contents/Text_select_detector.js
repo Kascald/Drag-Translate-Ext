@@ -6,6 +6,8 @@ import langFilter from "./LanguageFilter.js";
 let cachedSettings = {
   skipNative: false,
   targetLang: "KO",
+  isEnabled: true,
+  disabledDomains: [],
 };
 
 // 스토리지 데이터 동기화
@@ -14,6 +16,8 @@ const updateSettings = () => {
     {
       skipNative: false,
       targetLang: "KO",
+      isEnabled: true,
+      disabledDomains: [],
     },
     (items) => {
       cachedSettings = items;
@@ -32,18 +36,22 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 document.addEventListener("mouseup", (e) => {
   uiRenderer.removePopup();
 
-  // 1. 텍스트 추출 및 기본 검증
+  // 캐시된 설정 로드 확인
+  if (!cachedSettings.isEnabled) return;
+  if (cachedSettings.disabledDomains.includes(window.location.hostname)) return;
+
+  // 텍스트 추출 및 기본 검증
   const selection = window.getSelection();
   const selectedText = selection.toString().trim();
   if (!selectedText) return;
 
-  // 2. 필터링 체크 (모국어 등 스킵 조건 확인)
+  // 필터링 체크 (모국어 등 스킵 조건 확인)
   if (langFilter.shouldSkip(selectedText, cachedSettings.skipNative)) {
     console.log("필터링 조건에 의해 번역을 생략합니다.");
     return;
   }
 
-  // 3. 입력 폼/수정 가능 영역 제외
+  // 입력 폼/수정 가능 영역 제외
   const target = e.target;
   if (
     target.tagName === "INPUT" ||
@@ -53,12 +61,12 @@ document.addEventListener("mouseup", (e) => {
     return;
   }
 
-  // 4. 좌표 계산 및 팝업 초기 렌더링
+  // 좌표 계산 및 팝업 초기 렌더링
   const range = selection.getRangeAt(0);
   const targetRect = range.getBoundingClientRect();
   const { top, left } = locationCalc.calc(targetRect, selectedText);
 
-  // 5. 언어별 맥락(Context) 판단 및 번역 요청
+  // 언어별 맥락(Context) 판단 및 번역 요청
   uiRenderer.render(left, top, selectedText);
 
   const isJp = langFilter.isJapanese(selectedText);

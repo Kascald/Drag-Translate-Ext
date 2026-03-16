@@ -8,6 +8,7 @@ export default defineConfig({
       input: {
         content_script: resolve(__dirname, "contents/text_select_detector.js"),
         service_worker: resolve(__dirname, "service/message_sender.js"),
+        popup: resolve(__dirname, "options/popup.js"),
         options: resolve(__dirname, "options/options.js"),
       },
       output: {
